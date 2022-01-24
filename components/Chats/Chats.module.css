@@ -1,0 +1,52 @@
+.section {
+  width: 350px;
+  background-color: var(--blue-bg);
+  height: 100vh;
+  padding: 1rem;
+}
+
+.section header label {
+  font-size: 1rem;
+}
+
+.icons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.icons div {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+}
+
+.heading {
+  padding: 1rem 0;
+  display: flex;
+}
+
+.none {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer {
+  height: 300px;
+  overflow: auto;
+}
+
+.heading {
+  position: sticky;
+  top: 0;
+  background-color: var(--blue-bg);
+}

@@ -1,0 +1,86 @@
+.section {
+  background-color: var(--blue-bg);
+  height: 100vh;
+  width: 100%;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.paper {
+  background-color: white;
+  width: 50%;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  /* gap: 2rem; */
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  /* padding: 2rem 0; */
+  padding-top: 2rem;
+}
+
+.btns {
+  padding: 0 2rem;
+}
+
+.signUp {
+  font-size: 0.85rem;
+  color: var(--blue-bg);
+  cursor: pointer;
+}
+.signUp:hover {
+  text-decoration: underline;
+}
+
+.extra {
+  display: flex;
+  gap: 2rem;
+}
+
+.input {
+  width: 50%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.file {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-self: flex-end;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: white;
+  font-size: 2rem;
+}
+
+.img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}

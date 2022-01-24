@@ -1,0 +1,49 @@
+.item {
+  display: flex;
+  width: 100%;
+  padding: 1rem;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 200ms ease-in-out;
+  border-radius: 0.4rem;
+}
+
+.item:hover {
+  background-color: rgba(0, 0, 0, 0.178);
+}
+
+.info p {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.info span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.753);
+}
+
+.data {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.alert {
+  animation-name: grow;
+  animation-duration: 2s;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+@keyframes grow {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

@@ -1,0 +1,33 @@
+.text {
+  background-color: var(--blue-bg);
+  padding: 1rem;
+  border-radius: 1rem;
+  align-self: flex-start;
+  width: 45%;
+  color: white;
+}
+
+.text p {
+  font-size: 1rem;
+}
+
+.text span {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mine {
+  background-color: rgba(0, 0, 0, 0.082);
+  align-self: flex-end;
+  color: black;
+}
+
+.mine span {
+  justify-content: flex-start;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+}
