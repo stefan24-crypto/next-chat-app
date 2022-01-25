@@ -22,18 +22,17 @@ interface GroupChat {
 //   receiverHasRead: boolean;
 // }
 
-type Message = {
+export type Message = {
   id: string;
   text: string;
   to: string;
   time: Timestamp;
   author: string;
 };
-type People = { name: string; profile_pic: string };
 
 export interface DM {
   id: string;
-  people: [People, People];
+  people: User[];
   messages: Message[] | [];
   receiverHasRead: boolean;
 }

@@ -2,106 +2,101 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import classes from "./ChatItem.module.css";
 import SendIcon from "@mui/icons-material/Send";
 import { dataActions } from "../../store/data-slice";
-import AnnouncementIcon from "@mui/icons-material/Announcement";
+
+import CampaignIcon from "@mui/icons-material/Campaign";
 import { db } from "../../firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { v4 as uuid } from "uuid";
 import { Avatar } from "@mui/material";
-import { DM } from "../../models";
+import { DM, User, Message } from "../../models";
+import { off } from "process";
 
 interface ChatItemProps {
   id: string;
-  name: string;
   lastMessage: any;
-  profile_pic: string;
-  hasMessaged: boolean;
-  hasRead?: boolean;
-  item?: DM;
+  people?: User[];
   lastMessageItem?: any;
+  hasMessaged: boolean;
+  person?: User;
+  hasRead?: boolean;
+  yourDMs?: DM[];
+  messages?: Message[];
+  messageRead?: (id: string, arrOfMessages: any[]) => void;
 }
 
 const ChatItem: React.FC<ChatItemProps> = ({
   id,
-  name,
   lastMessage,
-  lastMessageItem,
-  profile_pic,
+  people,
   hasMessaged,
+  lastMessageItem,
+  person,
   hasRead,
-  item,
+  messages,
+  messageRead,
 }) => {
   const dispatch = useAppDispatch();
   const curUser = useAppSelector((state) => state.auth.curUser);
   const users = useAppSelector((state) => state.data.users);
   const curUserProfile = users.find((each) => each.id === curUser.uid);
   const clickedOnUserProfile = users.find((each) => each.id === id);
-  // if (hasMessaged) {
-  //   if (lastMessageItem.author !== curUser.displayName) {
-  //   }
-  // } else {
-  //   // createChatroom when clicked
-  // }
+  const dmsCollection = collection(db, "dms");
+  const otherPerson = people?.find((each) => each.name !== curUser.displayName);
 
   const addNewContactHandler = async () => {
-    console.log(id);
-    console.log("New Contact");
     const unique_id = uuid();
-    //Add DM to curUser
-    const curUserDoc = doc(db, "users", curUser.uid);
-    const newFields = {
-      messages: [
-        ...curUserProfile!.messages,
+    const fields = {
+      id: unique_id,
+      people: [
         {
-          id: unique_id,
-          receiver: clickedOnUserProfile?.name,
-          receiver_profile_pic: clickedOnUserProfile?.profile_pic,
-          messages: [],
-          receiverHasRead: true,
+          id: curUserProfile?.id,
+          name: curUserProfile?.name,
+          profile_pic: curUserProfile?.profile_pic,
+        },
+        {
+          id: clickedOnUserProfile?.id,
+          name: clickedOnUserProfile?.name,
+          profile_pic: clickedOnUserProfile?.profile_pic,
         },
       ],
+      messages: [],
+      receiverHasRead: true,
     };
+    await addDoc(dmsCollection, fields);
+  };
 
-    await updateDoc(curUserDoc, newFields);
-    //Add DM to clicked on user
-    const unique_id_2 = uuid();
-    const clickedOnUserDoc = doc(db, "users", id);
-    const newFields2 = {
-      messages: [
-        ...clickedOnUserProfile!.messages,
-        {
-          id: unique_id_2,
-          receiver: curUserProfile?.name,
-          receiver_profile_pic: curUserProfile?.profile_pic,
-          messages: [],
-          receiverHasRead: true,
-        },
-      ],
-    };
-    await updateDoc(clickedOnUserDoc, newFields2);
+  const clickUserHandler = () => {
+    if (hasMessaged) {
+      dispatch(dataActions.setCurChatRoomID(id));
+      const sortedMessages = [...messages!];
+      sortedMessages?.sort((a, b) => a.time.seconds - b.time.seconds);
+      messageRead!(id, sortedMessages);
+    } else {
+      addNewContactHandler();
+    }
+    console.log(clickedOnUserProfile);
   };
 
   return (
-    <div
-      className={classes.item}
-      onClick={() =>
-        hasMessaged
-          ? dispatch(dataActions.setCurChatRoomID(id))
-          : addNewContactHandler()
-      }
-    >
+    <div className={classes.item} onClick={clickUserHandler}>
       <div className={classes.data}>
         <div className={classes.img}>
           {/* <img src={profile_pic} alt="Profile" /> */}
-          <Avatar src={profile_pic} alt="profile" />
+          <Avatar
+            src={otherPerson?.profile_pic || person?.profile_pic}
+            alt="profile"
+          />
         </div>
         <div className={classes.info}>
-          <p>{name}</p>
+          <p>{otherPerson?.name || person?.name}</p>
           <span>{lastMessage}</span>
         </div>
       </div>
-      {!hasRead && hasMessaged && (
-        <AnnouncementIcon color="secondary" className={classes.alert} />
-      )}
+      {!hasRead &&
+        hasMessaged &&
+        lastMessageItem.author !== curUserProfile?.name && (
+          <CampaignIcon color="error" className={classes.alert} />
+        )}
     </div>
   );
 };

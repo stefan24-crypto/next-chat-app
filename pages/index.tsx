@@ -42,6 +42,18 @@ const Home: NextPage = () => {
     });
   }, []);
 
+  useEffect(() => {
+    onSnapshot(collection(db, "dms"), (snapshot) => {
+      snapshot.docs.map((doc) =>
+        dispatch(
+          dataActions.setDMs(
+            snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+          )
+        )
+      );
+    });
+  }, []);
+
   return (
     <div>
       <Head>

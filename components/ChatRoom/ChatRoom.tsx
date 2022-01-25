@@ -14,81 +14,42 @@ const ChatRoom: React.FC = () => {
   const users = useAppSelector((state) => state.data.users);
   const chatRoomID = useAppSelector((state) => state.data.curChatRoomID);
   const curUser = useAppSelector((state) => state.auth.curUser);
+  const dms = useAppSelector((state) => state.data.dms);
   const messageInputRef = useRef<HTMLInputElement>();
   const curUserProfile = useAppSelector((state) => state.data.users).find(
     (each) => each.id === curUser.uid
   );
-  const curChatRoom = curUserProfile?.messages.find(
-    (each) => each.id === chatRoomID
+  const curChatRoom = dms.find((each) => each.id === chatRoomID);
+  const otherPerson = curChatRoom?.people.find(
+    (each) => each.name !== curUser.displayName
   );
-  const otherPersonChatRoom = users
-    .find((each) => each.name === curChatRoom?.receiver)
-    ?.messages.find((each) => each.receiver === curUserProfile?.name);
-  const otherPersonProfile = users.find(
-    (each) => each.name === curChatRoom?.receiver
-  );
+
+  // type Message = {
+  //   id: string;
+  //   text: string;
+  //   to: string;
+  //   time: Timestamp;
+  //   author: string;
+  // };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-    //Add Message to curUserProfile
     const unique_id = uuid();
-    const message = messageInputRef.current!.value;
-
-    const otherMessages = curUserProfile?.messages.filter(
-      (each) => each.id !== curChatRoom?.id
-    );
-    const curUserDoc = doc(db, "users", curUser.uid);
+    const dmDoc = doc(db, "dms", chatRoomID);
     const newFields = {
       messages: [
-        ...otherMessages!,
+        ...curChatRoom!.messages,
         {
-          id: curChatRoom?.id,
-          receiver: curChatRoom!.receiver,
-          receiver_profile_pic: curChatRoom?.receiver_profile_pic,
-          receiverHasRead: true,
-          messages: [
-            ...curChatRoom!.messages,
-            {
-              id: unique_id,
-              author: curUserProfile!.name,
-              time: Timestamp.now(),
-              text: message,
-            },
-          ],
+          id: unique_id,
+          text: messageInputRef.current!.value,
+          to: otherPerson?.name,
+          author: curUserProfile?.name,
+          time: Timestamp.now(),
         },
       ],
+      receiverHasRead: false,
     };
-
-    await updateDoc(curUserDoc, newFields);
-    //AddMessage to otherPersonInChatRoom
-    const unique_id_2 = uuid();
-    const otherMessages2 = otherPersonProfile?.messages.filter(
-      (each) => each.id !== otherPersonChatRoom?.id
-    );
-
-    const otherUserDoc = doc(db, "users", otherPersonProfile!.id);
-    const newFields2 = {
-      messages: [
-        ...otherMessages2!,
-        {
-          id: otherPersonChatRoom?.id,
-          receiver: otherPersonChatRoom?.receiver,
-          receiver_profile_pic: otherPersonChatRoom?.receiver_profile_pic,
-          receiverHasRead: false,
-          messages: [
-            ...otherPersonChatRoom!.messages,
-            {
-              id: unique_id_2,
-              author: curUserProfile!.name,
-              time: Timestamp.now(),
-              text: message,
-            },
-          ],
-        },
-      ],
-    };
-    await updateDoc(otherUserDoc, newFields2);
-
+    await updateDoc(dmDoc, newFields);
     messageInputRef.current!.value = "";
   };
 
@@ -104,9 +65,8 @@ const ChatRoom: React.FC = () => {
       ) : (
         <main className={classes.chatBox}>
           <header>
-            <p>{curChatRoom.receiver}</p>
-
-            <Avatar src={curChatRoom.receiver_profile_pic} alt="profile" />
+            <p>{otherPerson?.name}</p>
+            <Avatar src={otherPerson?.profile_pic} alt="profile" />
           </header>
           <Paper
             elevation={0}
@@ -125,7 +85,6 @@ const ChatRoom: React.FC = () => {
                 time={each.time}
                 key={each.id}
                 id={each.id}
-                curChatRoomID={chatRoomID}
               />
             ))}
           </Paper>

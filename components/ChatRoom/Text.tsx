@@ -12,14 +12,12 @@ interface TextProps {
   time: Timestamp;
   author: string;
   id: string;
-  curChatRoomID: string;
 }
 
 const Text: React.FC<TextProps> = ({
   text,
   time,
   author,
-  curChatRoomID,
   id,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -27,39 +25,13 @@ const Text: React.FC<TextProps> = ({
   const curUserProfile = useAppSelector((state) => state.data.users).find(
     (each) => each.id === curUser.uid
   );
-  const thisChatRoom = curUserProfile?.messages.find(
-    (each) => each.id === curChatRoomID
-  );
+  
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const deleteMessageHandler = async () => {
-    const curUserDoc = doc(db, "users", curUser.uid);
-    const updatedArrayOfMessages = curUserProfile?.messages
-      .find((each) => each.id === curChatRoomID)
-      ?.messages.filter((each) => each.id !== id);
-    console.log(updatedArrayOfMessages);
-    const otherDMs = curUserProfile?.messages.filter(
-      (each) => each.id !== curChatRoomID
-    );
-    const newFields = {
-      messages: [
-        ...otherDMs!,
-        {
-          id: thisChatRoom?.id,
-          receiver: thisChatRoom?.receiver,
-          receiver_profile_pic: thisChatRoom?.receiver_profile_pic,
-          receiverHasRead: thisChatRoom?.receiverHasRead,
-          messages: updatedArrayOfMessages,
-        },
-      ],
-    };
-    await updateDoc(curUserDoc, newFields);
-  };
   const handleClose = () => {
-    deleteMessageHandler();
     setAnchorEl(null);
   };
 

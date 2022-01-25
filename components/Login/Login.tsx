@@ -12,6 +12,8 @@ import {
 import { User } from "../../models";
 import { setDoc, doc } from "@firebase/firestore";
 import { useRouter } from "next/router";
+import { useAppDispatch } from "../../store/hooks";
+import { dataActions } from "../../store/data-slice";
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -20,7 +22,7 @@ const Login: React.FC = () => {
   const UsernameRef = useRef<HTMLInputElement>();
   const [image, setImage] = useState<any>(null);
   const [url, setUrl] = useState("");
-  const router = useRouter();
+  const dispatch = useAppDispatch();
 
   //Handing Image
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +72,6 @@ const Login: React.FC = () => {
         id: auth.currentUser!.uid,
         name: username,
         profile_pic: profile_pic,
-        messages: [],
       };
       await setDoc(doc(db, "users", auth.currentUser!.uid), userData);
     } else {
@@ -78,6 +79,7 @@ const Login: React.FC = () => {
         alert(error.message)
       );
     }
+    dispatch(dataActions.setCurChatRoomID(""));
     // router.push(`/${auth!.currentUser!.uid}`);
   };
 

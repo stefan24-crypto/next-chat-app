@@ -1,16 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { User } from "../models";
-
-
+import { User, DM } from "../models";
 
 interface state {
   users: User[];
   curChatRoomID: string;
+  dms: DM[];
 }
 
 const initialState: state = {
   users: [],
   curChatRoomID: "",
+  dms: [],
 };
 
 const dataSlice = createSlice({
@@ -22,6 +22,9 @@ const dataSlice = createSlice({
     },
     setCurChatRoomID(state, action) {
       state.curChatRoomID = action.payload;
+    },
+    setDMs(state, action) {
+      state.dms = action.payload;
     },
   },
 });
