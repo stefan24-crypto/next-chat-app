@@ -1,21 +1,19 @@
 import classes from "./Chats.module.css";
 import TextField from "@mui/material/TextField";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { useAppSelector } from "../../store/hooks";
 import ChatItem from "./ChatItem";
-import { IconButton, Paper } from "@mui/material";
-import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
+import { IconButton } from "@mui/material";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useRouter } from "next/router";
 
 const Chats: React.FC = () => {
   const users = useAppSelector((state) => state.data.users);
   const curUser = useAppSelector((state) => state.auth.curUser);
   const profile = users.find((each) => each.id === curUser.uid);
-
+  const router = useRouter();
   const DMs = useAppSelector((state) => state.data.dms);
-  console.log(DMs);
 
   const yourMessages = DMs.filter((each) =>
     each.people.find((person) => person.name === curUser?.displayName)
@@ -28,7 +26,6 @@ const Chats: React.FC = () => {
   const otherPersons = users
     .filter((user) => !yourMessagesNames.includes(user.name))
     .filter((each) => each.name !== curUser.displayName);
-  console.log(otherPersons);
 
   const messageRead = async (id: string, arrOfMessages: any[]) => {
     if (clickedChatWhereNotSender(arrOfMessages)) {
@@ -51,11 +48,8 @@ const Chats: React.FC = () => {
             <TextField label="Search..." variant="standard" fullWidth />
           </div>
           <div>
-            <IconButton>
+            <IconButton onClick={() => router.push("/make_group")}>
               <GroupAddIcon />
-            </IconButton>
-            <IconButton>
-              <PersonAddIcon />
             </IconButton>
           </div>
         </div>

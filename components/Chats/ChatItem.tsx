@@ -1,15 +1,14 @@
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import classes from "./ChatItem.module.css";
-import SendIcon from "@mui/icons-material/Send";
 import { dataActions } from "../../store/data-slice";
 
 import CampaignIcon from "@mui/icons-material/Campaign";
 import { db } from "../../firebase";
 import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { v4 as uuid } from "uuid";
-import { Avatar } from "@mui/material";
+import { Avatar, IconButton } from "@mui/material";
 import { DM, User, Message } from "../../models";
-import { off } from "process";
+import useShortenText from "../../hooks/useShortedText";
 
 interface ChatItemProps {
   id: string;
@@ -41,7 +40,9 @@ const ChatItem: React.FC<ChatItemProps> = ({
   const curUserProfile = users.find((each) => each.id === curUser.uid);
   const clickedOnUserProfile = users.find((each) => each.id === id);
   const dmsCollection = collection(db, "dms");
+  //check if if is a group chat: if people.length > 2;
   const otherPerson = people?.find((each) => each.name !== curUser.displayName);
+  const shortenText = useShortenText(lastMessage, 25);
 
   const addNewContactHandler = async () => {
     const unique_id = uuid();
@@ -81,7 +82,6 @@ const ChatItem: React.FC<ChatItemProps> = ({
     <div className={classes.item} onClick={clickUserHandler}>
       <div className={classes.data}>
         <div className={classes.img}>
-          {/* <img src={profile_pic} alt="Profile" /> */}
           <Avatar
             src={otherPerson?.profile_pic || person?.profile_pic}
             alt="profile"
@@ -89,14 +89,16 @@ const ChatItem: React.FC<ChatItemProps> = ({
         </div>
         <div className={classes.info}>
           <p>{otherPerson?.name || person?.name}</p>
-          <span>{lastMessage}</span>
+          <span>{shortenText}</span>
         </div>
       </div>
-      {!hasRead &&
-        hasMessaged &&
-        lastMessageItem.author !== curUserProfile?.name && (
-          <CampaignIcon color="error" className={classes.alert} />
-        )}
+      <div className={classes.icons}>
+        {!hasRead &&
+          hasMessaged &&
+          lastMessageItem.author !== curUserProfile?.name && (
+            <CampaignIcon color="error" className={classes.alert} />
+          )}
+      </div>
     </div>
   );
 };

@@ -20,17 +20,11 @@ const ChatRoom: React.FC = () => {
     (each) => each.id === curUser.uid
   );
   const curChatRoom = dms.find((each) => each.id === chatRoomID);
+  //check if it is a group chat!
   const otherPerson = curChatRoom?.people.find(
     (each) => each.name !== curUser.displayName
   );
 
-  // type Message = {
-  //   id: string;
-  //   text: string;
-  //   to: string;
-  //   time: Timestamp;
-  //   author: string;
-  // };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();

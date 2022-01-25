@@ -11,6 +11,20 @@ const Navbar: React.FC = () => {
   const curUser: any = useAppSelector((state) => state.auth.curUser);
   const users = useAppSelector((state) => state.data.users);
   const curUserProfile = users.find((each) => each.id === curUser.uid);
+  const DMs = useAppSelector((state) => state.data.dms);
+  const yourMessages = DMs.filter((each) =>
+    each.people.find((person) => person.name === curUser?.displayName)
+  );
+
+  const notifications = yourMessages.reduce(
+    (acc, each) =>
+      !each.receiverHasRead &&
+      each.messages.at(-1)?.author !== curUser.displayName
+        ? acc + 1
+        : acc + 0,
+    0
+  );
+
   return (
     <nav className={classes.nav}>
       <div className={classes.logo}>
@@ -18,10 +32,8 @@ const Navbar: React.FC = () => {
         <h1>WhatsApp</h1>
       </div>
       <div className={classes.icons}>
-        <Badge badgeContent={0} color="error">
-          <IconButton color="error">
-            <NotificationsIcon />
-          </IconButton>
+        <Badge badgeContent={notifications} color="error">
+          <NotificationsIcon color="error" />
         </Badge>
         <IconButton color="error" onClick={() => auth.signOut()}>
           <LogoutIcon />

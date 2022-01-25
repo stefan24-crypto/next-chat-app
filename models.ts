@@ -35,6 +35,7 @@ export interface DM {
   people: User[];
   messages: Message[] | [];
   receiverHasRead: boolean;
+  description?: string;
 }
 
 export interface User {
