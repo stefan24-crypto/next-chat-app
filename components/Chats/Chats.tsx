@@ -89,7 +89,7 @@ const Chats: React.FC = () => {
               id={each.id}
               key={each.id}
               person={each}
-              lastMessage="Message Me!"
+              lastMessage="Message Me"
               hasMessaged={false}
             />
           ))}

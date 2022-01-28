@@ -5,6 +5,8 @@ import { db } from "../../firebase";
 import { onSnapshot, collection } from "firebase/firestore";
 import { dataActions } from "../../store/data-slice";
 import { useAppDispatch } from "../../store/hooks";
+import { auth } from "../../firebase";
+import { authActions } from "../../store/auth-slice";
 
 const MakeGroupPage = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +20,19 @@ const MakeGroupPage = () => {
         )
       );
     });
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        dispatch(authActions.setCurUser(authUser));
+      } else {
+        dispatch(authActions.setCurUser(null));
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (

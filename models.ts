@@ -1,3 +1,4 @@
+import { StringLike } from "@firebase/util";
 import { Timestamp } from "firebase/firestore";
 import React from "react";
 
@@ -35,7 +36,15 @@ export interface DM {
   people: User[];
   messages: Message[] | [];
   receiverHasRead: boolean;
-  description?: string;
+}
+export interface Group {
+  id: string;
+  people: User[];
+  messages: Message[] | [];
+  receiverHasRead: boolean;
+  description: string;
+  group_name: string;
+  group_profile_pic: string;
 }
 
 export interface User {

@@ -21,6 +21,12 @@
   align-items: center;
 }
 
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .noChat {
   display: flex;
   justify-content: center;

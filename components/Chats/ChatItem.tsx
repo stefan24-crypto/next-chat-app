@@ -9,6 +9,7 @@ import { v4 as uuid } from "uuid";
 import { Avatar, IconButton } from "@mui/material";
 import { DM, User, Message } from "../../models";
 import useShortenText from "../../hooks/useShortedText";
+import { UIActions } from "../../store/ui-slice";
 
 interface ChatItemProps {
   id: string;
@@ -43,6 +44,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
   //check if if is a group chat: if people.length > 2;
   const otherPerson = people?.find((each) => each.name !== curUser.displayName);
   const shortenText = useShortenText(lastMessage, 25);
+  const scroll = useAppSelector((state) => state.ui.scroll);
 
   const addNewContactHandler = async () => {
     const unique_id = uuid();
@@ -72,10 +74,10 @@ const ChatItem: React.FC<ChatItemProps> = ({
       const sortedMessages = [...messages!];
       sortedMessages?.sort((a, b) => a.time.seconds - b.time.seconds);
       messageRead!(id, sortedMessages);
+      dispatch(UIActions.setScrollTo(true));
     } else {
       addNewContactHandler();
     }
-    console.log(clickedOnUserProfile);
   };
 
   return (

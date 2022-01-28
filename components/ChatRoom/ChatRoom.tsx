@@ -3,12 +3,14 @@ import Navbar from "../Navbar/Navbar";
 import Paper from "@mui/material/Paper";
 import { useAppSelector } from "../../store/hooks";
 import Text from "./Text";
-import { Avatar, InputAdornment, TextField } from "@mui/material";
+import { Avatar, IconButton, InputAdornment, TextField } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import React, { useRef } from "react";
-import { doc, Timestamp, updateDoc } from "firebase/firestore";
+import React, { useEffect, useRef } from "react";
+import { deleteDoc, doc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { v4 as uuid } from "uuid";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import Messages from "./Messages";
 
 const ChatRoom: React.FC = () => {
   const users = useAppSelector((state) => state.data.users);
@@ -20,12 +22,13 @@ const ChatRoom: React.FC = () => {
     (each) => each.id === curUser.uid
   );
   const curChatRoom = dms.find((each) => each.id === chatRoomID);
+  const scroll = useAppSelector((state) => state.ui.scroll);
   //check if it is a group chat!
   const otherPerson = curChatRoom?.people.find(
     (each) => each.name !== curUser.displayName
   );
 
-
+  //Adding A message
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     const unique_id = uuid();
@@ -47,6 +50,17 @@ const ChatRoom: React.FC = () => {
     messageInputRef.current!.value = "";
   };
 
+  //Removing a Person
+  const removePersonHandler = async () => {
+    const response = prompt(
+      'Type "yes" to delete this contact and "no" to go back'
+    );
+    if (response === "yes") {
+      const thisDoc = doc(db, "dms", chatRoomID);
+      await deleteDoc(thisDoc);
+    }
+  };
+
   return (
     <section className={classes.section}>
       <header>
@@ -59,29 +73,15 @@ const ChatRoom: React.FC = () => {
       ) : (
         <main className={classes.chatBox}>
           <header>
-            <p>{otherPerson?.name}</p>
-            <Avatar src={otherPerson?.profile_pic} alt="profile" />
+            <div className={classes.profile}>
+              <Avatar src={otherPerson?.profile_pic} alt="profile" />
+              <p>{otherPerson?.name}</p>
+            </div>
+            <IconButton sx={{ color: "white" }} onClick={removePersonHandler}>
+              <PersonRemoveIcon />
+            </IconButton>
           </header>
-          <Paper
-            elevation={0}
-            sx={{
-              height: "550px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              padding: "1rem",
-            }}
-          >
-            {curChatRoom.messages.map((each) => (
-              <Text
-                author={each.author}
-                text={each.text}
-                time={each.time}
-                key={each.id}
-                id={each.id}
-              />
-            ))}
-          </Paper>
+          <Messages curChatRoom={curChatRoom} />
           <form className={classes.footer} onSubmit={submitHandler}>
             <TextField
               fullWidth

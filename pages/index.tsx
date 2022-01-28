@@ -10,6 +10,7 @@ import { onSnapshot, doc, collection } from "firebase/firestore";
 import { authActions } from "../store/auth-slice";
 import { dataActions } from "../store/data-slice";
 import { db } from "../firebase";
+import { CircularProgress } from "@mui/material";
 
 const Home: NextPage = () => {
   const dispatch = useAppDispatch();

@@ -6,29 +6,38 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { IconButton } from "@mui/material";
 import { Menu, MenuItem } from "@mui/material";
 import { db } from "../../firebase";
+import ChatRoom from "./ChatRoom";
+import { DM } from "../../models";
 
 interface TextProps {
   text: string;
   time: Timestamp;
   author: string;
   id: string;
+  curChatRoom: DM;
 }
 
-const Text: React.FC<TextProps> = ({
-  text,
-  time,
-  author,
-  id,
-}) => {
+const Text: React.FC<TextProps> = ({ text, time, author, id, curChatRoom }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const curUser = useAppSelector((state) => state.auth.curUser);
   const curUserProfile = useAppSelector((state) => state.data.users).find(
     (each) => each.id === curUser.uid
   );
-  
+
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  //Deleting a Messages
+  const deleteMessageHandler = async () => {
+    const dmDoc = doc(db, "dms", curChatRoom.id);
+    const newMessages = curChatRoom.messages.filter((each) => each.id !== id);
+    const newFields = {
+      messages: newMessages,
+    };
+    await updateDoc(dmDoc, newFields);
+    setAnchorEl(null);
   };
 
   const handleClose = () => {
@@ -62,7 +71,7 @@ const Text: React.FC<TextProps> = ({
                 horizontal: "left",
               }}
             >
-              <MenuItem onClick={handleClose}>Delete</MenuItem>
+              <MenuItem onClick={deleteMessageHandler}>Delete</MenuItem>
             </Menu>
           </>
         ) : (

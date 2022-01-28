@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { User, DM } from "../models";
+import { User, DM, Group } from "../models";
 
 interface state {
   users: User[];
   curChatRoomID: string;
-  dms: DM[];
+  dms: DM[] | Group[];
 }
 
 const initialState: state = {
