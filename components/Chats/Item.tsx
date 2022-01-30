@@ -65,7 +65,7 @@ const Item: React.FC<ItemProps> = ({
           <p>
             {name} <span>{isGroup ? <GroupIcon /> : ""}</span>
           </p>
-          <span>{shortenText || "Message Me"}</span>
+          <span>{shortenText || lastMessageObject}</span>
         </div>
       </div>
       <div className={classes.icons}>

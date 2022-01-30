@@ -1,7 +1,7 @@
 import { useAppSelector } from "../../store/hooks";
 import { v4 as uuid } from "uuid";
 import Item from "./Item";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 interface ChatItemProps {
@@ -47,9 +47,22 @@ const ChatItem: React.FC<ChatItemProps> = ({
     await addDoc(dmsCollection, fields);
   };
 
-  const addGroupHandler = () => {
-    console.log("group");
+  const addGroupHandler = async () => {
+    // console.log(id, object.id);
     //Do some logic here
+    const chatDoc = doc(db, "groups", id);
+    const newFields = {
+      people: [
+        ...object?.people,
+        {
+          id: curUserProfile?.id,
+          name: curUserProfile?.name,
+          profile_pic: curUserProfile?.profile_pic,
+        },
+      ],
+    };
+
+    await updateDoc(chatDoc, newFields);
   };
 
   if (neverMessaged) {
@@ -62,7 +75,9 @@ const ChatItem: React.FC<ChatItemProps> = ({
             ? object?.group_profile_pic
             : object.profile_pic
         }
-        lastMessageObject="Message Me"
+        lastMessageObject={
+          object?.people?.length > 2 ? "Message Us" : "Message Me"
+        }
         hasMessaged={false}
         hasRead={true}
         messages={object.messages}

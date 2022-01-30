@@ -28,11 +28,6 @@
   overflow: auto;
 }
 
-.heading {
-  padding: 1rem 0;
-  display: flex;
-}
-
 .none {
   height: 100%;
   width: 100%;
@@ -50,4 +45,7 @@
   position: sticky;
   top: 0;
   background-color: var(--blue-bg);
+  z-index: 1;
+  padding: 1rem 0;
+  display: flex;
 }
