@@ -18,9 +18,10 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import classes from "./CreateGroup.module.css";
 import { useRouter } from "next/router";
-import { storage } from "../../firebase";
+import { db, storage } from "../../firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { v4 as uuid } from "uuid";
+import { collection, addDoc } from "firebase/firestore";
 
 const CreateGroup: React.FC = () => {
   const curUser = useAppSelector((state) => state.auth.curUser);
@@ -33,6 +34,7 @@ const CreateGroup: React.FC = () => {
   const descriptionRef = useRef<HTMLInputElement>();
   const groupNameRef = useRef<HTMLInputElement>();
   const router = useRouter();
+  const groupsCollection = collection(db, "groups");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files![0]) {
@@ -68,11 +70,10 @@ const CreateGroup: React.FC = () => {
     } else {
       newChecked.splice(currentIndex, 1);
     }
-
     setChecked(newChecked);
   };
 
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     if (checked.length <= 1)
       return alert("You must have more than 2 people in the group chat!");
@@ -87,7 +88,8 @@ const CreateGroup: React.FC = () => {
       group_profile_pic: url,
       receiverHasRead: true,
     };
-    console.log(data);
+    await addDoc(groupsCollection, data);
+    router.push("/");
   };
 
   return (

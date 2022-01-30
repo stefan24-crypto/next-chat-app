@@ -15,6 +15,7 @@ import { CircularProgress } from "@mui/material";
 const Home: NextPage = () => {
   const dispatch = useAppDispatch();
   const curUser = useAppSelector((state) => state.auth.curUser);
+  const groups = useAppSelector((state) => state.data.groups);
 
   //Authentication
   useEffect(() => {
@@ -48,6 +49,18 @@ const Home: NextPage = () => {
       snapshot.docs.map((doc) =>
         dispatch(
           dataActions.setDMs(
+            snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+          )
+        )
+      );
+    });
+  }, []);
+
+  useEffect(() => {
+    onSnapshot(collection(db, "groups"), (snapshot) => {
+      snapshot.docs.map((doc) =>
+        dispatch(
+          dataActions.setGroups(
             snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
           )
         )

@@ -1,6 +1,4 @@
-import { StringLike } from "@firebase/util";
 import { Timestamp } from "firebase/firestore";
-import React from "react";
 
 interface GroupChat {
   id: string;
@@ -26,7 +24,7 @@ interface GroupChat {
 export type Message = {
   id: string;
   text: string;
-  to: string;
+  to: string | string[];
   time: Timestamp;
   author: string;
 };
@@ -37,11 +35,18 @@ export interface DM {
   messages: Message[] | [];
   receiverHasRead: boolean;
 }
+
+// interface MemberOfGroup {
+//   id: string;
+//   name: string;
+//   profile_pic: string;
+//   hasRead: boolean;
+// }
+
 export interface Group {
   id: string;
   people: User[];
   messages: Message[] | [];
-  receiverHasRead: boolean;
   description: string;
   group_name: string;
   group_profile_pic: string;

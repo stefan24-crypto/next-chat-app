@@ -1,50 +1,29 @@
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import classes from "./ChatItem.module.css";
-import { dataActions } from "../../store/data-slice";
-
-import CampaignIcon from "@mui/icons-material/Campaign";
-import { db } from "../../firebase";
-import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
+import { useAppSelector } from "../../store/hooks";
 import { v4 as uuid } from "uuid";
-import { Avatar, IconButton } from "@mui/material";
-import { DM, User, Message } from "../../models";
-import useShortenText from "../../hooks/useShortedText";
-import { UIActions } from "../../store/ui-slice";
+import Item from "./Item";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebase";
 
 interface ChatItemProps {
   id: string;
-  lastMessage: any;
-  people?: User[];
-  lastMessageItem?: any;
-  hasMessaged: boolean;
-  person?: User;
-  hasRead?: boolean;
-  yourDMs?: DM[];
-  messages?: Message[];
+  object: any;
+  hasRead: boolean;
+  neverMessaged: boolean;
   messageRead?: (id: string, arrOfMessages: any[]) => void;
 }
 
 const ChatItem: React.FC<ChatItemProps> = ({
-  id,
-  lastMessage,
-  people,
-  hasMessaged,
-  lastMessageItem,
-  person,
+  object,
   hasRead,
-  messages,
+  neverMessaged,
   messageRead,
+  id,
 }) => {
-  const dispatch = useAppDispatch();
   const curUser = useAppSelector((state) => state.auth.curUser);
   const users = useAppSelector((state) => state.data.users);
   const curUserProfile = users.find((each) => each.id === curUser.uid);
   const clickedOnUserProfile = users.find((each) => each.id === id);
   const dmsCollection = collection(db, "dms");
-  //check if if is a group chat: if people.length > 2;
-  const otherPerson = people?.find((each) => each.name !== curUser.displayName);
-  const shortenText = useShortenText(lastMessage, 25);
-  const scroll = useAppSelector((state) => state.ui.scroll);
 
   const addNewContactHandler = async () => {
     const unique_id = uuid();
@@ -68,41 +47,68 @@ const ChatItem: React.FC<ChatItemProps> = ({
     await addDoc(dmsCollection, fields);
   };
 
-  const clickUserHandler = () => {
-    if (hasMessaged) {
-      dispatch(dataActions.setCurChatRoomID(id));
-      const sortedMessages = [...messages!];
-      sortedMessages?.sort((a, b) => a.time.seconds - b.time.seconds);
-      messageRead!(id, sortedMessages);
-      dispatch(UIActions.setScrollTo(true));
-    } else {
-      addNewContactHandler();
-    }
+  const addGroupHandler = () => {
+    console.log("group");
+    //Do some logic here
   };
 
-  return (
-    <div className={classes.item} onClick={clickUserHandler}>
-      <div className={classes.data}>
-        <div className={classes.img}>
-          <Avatar
-            src={otherPerson?.profile_pic || person?.profile_pic}
-            alt="profile"
-          />
-        </div>
-        <div className={classes.info}>
-          <p>{otherPerson?.name || person?.name}</p>
-          <span>{shortenText}</span>
-        </div>
-      </div>
-      <div className={classes.icons}>
-        {!hasRead &&
-          hasMessaged &&
-          lastMessageItem.author !== curUserProfile?.name && (
-            <CampaignIcon color="error" className={classes.alert} />
-          )}
-      </div>
-    </div>
-  );
+  if (neverMessaged) {
+    return (
+      <Item
+        id={object.id}
+        name={object?.people?.length > 2 ? object?.group_name : object?.name}
+        picture={
+          object?.people?.length > 2
+            ? object?.group_profile_pic
+            : object.profile_pic
+        }
+        lastMessageObject="Message Me"
+        hasMessaged={false}
+        hasRead={true}
+        messages={object.messages}
+        isGroup={false}
+        addHandler={
+          object?.people?.length > 2 ? addGroupHandler : addNewContactHandler
+        }
+      />
+    );
+  }
+
+  let content;
+  if (object?.people.length > 2) {
+    content = (
+      <Item
+        id={object.id}
+        name={object?.group_name}
+        picture={object.group_profile_pic}
+        lastMessageObject={object.messages.at(-1)}
+        hasMessaged={true}
+        hasRead={hasRead}
+        messages={object?.messages}
+        messageRead={messageRead}
+        isGroup={true}
+      />
+    );
+  } else {
+    const otherProfile = object?.people?.find(
+      (each: any) => each.name !== curUser.displayName
+    );
+    content = (
+      <Item
+        id={object.id}
+        name={otherProfile?.name}
+        picture={otherProfile?.profile_pic}
+        hasRead={hasRead}
+        hasMessaged={true}
+        lastMessageObject={object?.messages.at(-1)}
+        messages={object?.messages}
+        isGroup={false}
+        messageRead={messageRead}
+      />
+    );
+  }
+
+  return <>{content}</>;
 };
 
 export default ChatItem;

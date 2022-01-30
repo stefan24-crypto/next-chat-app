@@ -31,3 +31,14 @@
   display: flex;
   justify-content: space-between;
 }
+
+.message {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.message span {
+  color: rgb(221, 221, 221);
+}

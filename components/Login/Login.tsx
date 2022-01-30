@@ -113,6 +113,7 @@ const Login: React.FC = () => {
                 variant="standard"
                 fullWidth
                 required
+                type="password"
                 inputRef={passwordRef}
               />
               {!isLogin && (

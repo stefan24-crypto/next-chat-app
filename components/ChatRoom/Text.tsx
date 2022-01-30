@@ -31,12 +31,17 @@ const Text: React.FC<TextProps> = ({ text, time, author, id, curChatRoom }) => {
 
   //Deleting a Messages
   const deleteMessageHandler = async () => {
-    const dmDoc = doc(db, "dms", curChatRoom.id);
+    let chatDoc;
+    if (curChatRoom.people.length > 2) {
+      chatDoc = doc(db, "groups", curChatRoom.id);
+    } else {
+      chatDoc = doc(db, "dms", curChatRoom.id);
+    }
     const newMessages = curChatRoom.messages.filter((each) => each.id !== id);
     const newFields = {
       messages: newMessages,
     };
-    await updateDoc(dmDoc, newFields);
+    await updateDoc(chatDoc, newFields);
     setAnchorEl(null);
   };
 
@@ -52,7 +57,14 @@ const Text: React.FC<TextProps> = ({ text, time, author, id, curChatRoom }) => {
   return (
     <div className={textClasses}>
       <div className={classes.top}>
-        <p>{text}</p>
+        <div className={classes.message}>
+          <p>{text}</p>
+          <span>
+            {curChatRoom.people.length > 2 &&
+              author !== curUser.displayName &&
+              author}
+          </span>
+        </div>
         {author === curUser.displayName ? (
           <>
             <IconButton onClick={handleClick}>

@@ -15,9 +15,16 @@
   background-color: rgba(0, 0, 0, 0.178);
 }
 
+.info {
+  width: 100%;
+}
+
 .info p {
   font-size: 1rem;
+  width: 100%;
   font-weight: 700;
+  display: flex;
+  justify-content: space-between;
 }
 
 .info span {
@@ -28,6 +35,8 @@
 .data {
   display: flex;
   gap: 0.5rem;
+  width: 100%;
+  align-items: center;
 }
 
 .alert {

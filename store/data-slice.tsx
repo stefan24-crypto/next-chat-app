@@ -4,13 +4,15 @@ import { User, DM, Group } from "../models";
 interface state {
   users: User[];
   curChatRoomID: string;
-  dms: DM[] | Group[];
+  dms: DM[];
+  groups: Group[];
 }
 
 const initialState: state = {
   users: [],
   curChatRoomID: "",
   dms: [],
+  groups: [],
 };
 
 const dataSlice = createSlice({
@@ -25,6 +27,9 @@ const dataSlice = createSlice({
     },
     setDMs(state, action) {
       state.dms = action.payload;
+    },
+    setGroups(state, action) {
+      state.groups = action.payload;
     },
   },
 });

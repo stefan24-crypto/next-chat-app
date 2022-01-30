@@ -39,4 +39,12 @@
 .footer {
   height: 70px;
   padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.persons span {
+  font-size: 0.8rem;
+  color: rgb(231, 231, 231);
 }
